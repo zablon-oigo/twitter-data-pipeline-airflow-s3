@@ -1,0 +1,52 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+
+  airflow-webserver:
+    image: apache/airflow:2.9.0
+    depends_on:
+      - postgres
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+      AIRFLOW__WEBSERVER__RBAC: 'True'
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./main.py:/opt/airflow/main.py
+      - ./requirements.txt:/requirements.txt
+      - ./.env:/opt/airflow/.env
+    entrypoint: bash -c "
+      pip install -r /requirements.txt &&
+      airflow db upgrade &&
+      airflow users create --username admin --password admin --firstname admin --lastname airflow --role Admin --email admin@example.com &&
+      airflow webserver"
+      
+    ports:
+      - "8080:8080"
+
+  airflow-scheduler:
+    image: apache/airflow:2.9.0
+    depends_on:
+      - airflow-webserver
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: 'YOUR_FERNET_KEY'
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./requirements.txt:/requirements.txt
+      - ./.env:/opt/airflow/.env
+    entrypoint: bash -c "pip install -r /requirements.txt && airflow scheduler"
+
+volumes:
+  postgres-db-volume:
