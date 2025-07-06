@@ -37,3 +37,15 @@ def fetch_data_etl():
         user_fields=["created_at", "description", "location", "public_metrics", "verified", "profile_image_url", "url"]
     )
     user_id = user.data.id
+
+    for attempt in range(5):
+        try:
+            tweets = client.get_users_tweets(
+                id=user_id,
+                max_results=100,
+                tweet_fields=["created_at", "text", "public_metrics", "lang"]
+            )
+            break
+        except tweepy.TooManyRequests:
+            print(f"Rate limit hit. Sleeping... Attempt {attempt + 1}")
+            time.sleep(60 * (attempt + 1))
