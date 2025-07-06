@@ -76,3 +76,9 @@ def fetch_data_etl():
         "profile_image_url": user.data.profile_image_url,
         "website": user.data.url
     }
+
+    tweet_file = "tweets_data.csv"
+    user_file = "user_metadata.csv"
+
+    pd.DataFrame(tweet_list).to_csv(tweet_file, index=False)
+    pd.DataFrame([user_info]).to_csv(user_file, index=False)
