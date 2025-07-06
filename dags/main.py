@@ -82,3 +82,6 @@ def fetch_data_etl():
 
     pd.DataFrame(tweet_list).to_csv(tweet_file, index=False)
     pd.DataFrame([user_info]).to_csv(user_file, index=False)
+
+    upload_to_s3(tweet_file, f"twitter_data/{tweet_file}")
+    upload_to_s3(user_file, f"twitter_data/{user_file}")
