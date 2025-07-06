@@ -25,3 +25,15 @@ def upload_to_s3(local_file, s3_key):
         print(f"Uploaded {local_file} to s3://{S3_BUCKET}/{s3_key}")
     except Exception as e:
         print(f"Failed to upload {local_file} to S3: {e}")
+
+
+
+
+def fetch_data_etl():
+    client = tweepy.Client(bearer_token=bearer_token)
+
+    user = client.get_user(
+        username=username,
+        user_fields=["created_at", "description", "location", "public_metrics", "verified", "profile_image_url", "url"]
+    )
+    user_id = user.data.id
