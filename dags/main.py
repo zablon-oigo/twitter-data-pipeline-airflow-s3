@@ -49,3 +49,17 @@ def fetch_data_etl():
         except tweepy.TooManyRequests:
             print(f"Rate limit hit. Sleeping... Attempt {attempt + 1}")
             time.sleep(60 * (attempt + 1))
+
+    tweet_list = []
+    if tweets.data:
+        for tweet in tweets.data:
+            metrics = tweet.public_metrics
+            tweet_list.append({
+                "user": username,
+                "text": tweet.text,
+                "like_count": metrics["like_count"],
+                "retweet_count": metrics["retweet_count"],
+                "reply_count": metrics["reply_count"],
+                "lang": tweet.lang,
+                "created_at": tweet.created_at
+            })
