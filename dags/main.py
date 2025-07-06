@@ -63,3 +63,16 @@ def fetch_data_etl():
                 "lang": tweet.lang,
                 "created_at": tweet.created_at
             })
+
+    user_info = {
+        "username": username,
+        "description": user.data.description,
+        "location": user.data.location,
+        "followers": user.data.public_metrics["followers_count"],
+        "following": user.data.public_metrics["following_count"],
+        "tweet_count": user.data.public_metrics["tweet_count"],
+        "verified": user.data.verified,
+        "joined": user.data.created_at,
+        "profile_image_url": user.data.profile_image_url,
+        "website": user.data.url
+    }
